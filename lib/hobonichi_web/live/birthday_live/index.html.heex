@@ -1,0 +1,42 @@
+<.header>
+  Listing Birthdays
+  <:actions>
+    <.link patch={~p"/birthdays/new"}>
+      <.button>New Birthday</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="birthdays"
+  rows={@streams.birthdays}
+  row_click={fn {_id, birthday} -> JS.navigate(~p"/birthdays/#{birthday}") end}
+>
+  <:col :let={{_id, birthday}} label="Name"><%= birthday.name %></:col>
+  <:col :let={{_id, birthday}} label="Date"><%= birthday.date %></:col>
+  <:action :let={{_id, birthday}}>
+    <div class="sr-only">
+      <.link navigate={~p"/birthdays/#{birthday}"}>Show</.link>
+    </div>
+    <.link patch={~p"/birthdays/#{birthday}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, birthday}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: birthday.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="birthday-modal" show on_cancel={JS.patch(~p"/birthdays")}>
+  <.live_component
+    module={HobonichiWeb.BirthdayLive.FormComponent}
+    id={@birthday.id || :new}
+    title={@page_title}
+    action={@live_action}
+    birthday={@birthday}
+    patch={~p"/birthdays"}
+  />
+</.modal>

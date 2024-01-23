@@ -1,0 +1,27 @@
+<.header>
+  Birthday <%= @birthday.id %>
+  <:subtitle>This is a birthday record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/birthdays/#{@birthday}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit birthday</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @birthday.name %></:item>
+  <:item title="Date"><%= @birthday.date %></:item>
+</.list>
+
+<.back navigate={~p"/birthdays"}>Back to birthdays</.back>
+
+<.modal :if={@live_action == :edit} id="birthday-modal" show on_cancel={JS.patch(~p"/birthdays/#{@birthday}")}>
+  <.live_component
+    module={HobonichiWeb.BirthdayLive.FormComponent}
+    id={@birthday.id}
+    title={@page_title}
+    action={@live_action}
+    birthday={@birthday}
+    patch={~p"/birthdays/#{@birthday}"}
+  />
+</.modal>
